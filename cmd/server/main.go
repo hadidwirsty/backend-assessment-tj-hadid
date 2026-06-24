@@ -5,6 +5,8 @@ import (
 
 	"github.com/hadid/backend-assessment-tj-hadid/internal/config"
 	"github.com/hadid/backend-assessment-tj-hadid/internal/database"
+	"github.com/hadid/backend-assessment-tj-hadid/internal/mqtt"
+	"github.com/hadid/backend-assessment-tj-hadid/internal/rabbitmq"
 	"github.com/joho/godotenv"
 )
 
@@ -31,5 +33,24 @@ func main() {
 	}
 	log.Printf("Database migrations completed successfully")
 
-	log.Println("Fleet Management Server starting...")
+	repo := database.NewLocationRepository(db)
+
+	producer, err := rabbitmq.NewProducer(cfg.RabbitMQURL)
+	if err != nil {
+		log.Fatalf("Failed to initialize RabbitMQ producer: %v", err)
+	}
+	defer producer.Close()
+
+	subscriber, err := mqtt.NewSubscriber(cfg, repo, producer)
+	if err != nil {
+		log.Fatalf("Failed to initialize MQTT subscriber: %v", err)
+	}
+
+	if err := subscriber.Subscribe(); err != nil {
+		log.Fatalf("Failed to subscribe to MQTT topic: %v", err)
+	}
+
+	log.Println("MQTT subscriber started, listening for vehicle locations...")
+
+	select {}
 }
