@@ -1,80 +1,146 @@
 {
   "info": {
     "name": "Fleet Management System",
+    "description": "API Collection untuk Sistem Manajemen Armada Transjakarta. Menyediakan endpoint untuk memeriksa kesehatan server, mendapatkan lokasi terakhir kendaraan, dan melihat riwayat perjalanannya.",
     "_postman_id": "fleet-mgmt-tj-2024",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
       "name": "Health Check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response should be status OK\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql(\"OK\");",
+              "});"
+            ],
+            "type": "javascript"
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:8080/health",
-          "protocol": "http",
+          "raw": "{{base_url}}/health",
           "host": [
-            "localhost"
+            "{{base_url}}"
           ],
-          "port": "8080",
           "path": [
             "health"
           ]
-        }
+        },
+        "description": "Mengecek apakah REST API server berjalan dengan normal."
       },
       "response": []
     },
     {
       "name": "Get Last Location",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Verify vehicle_id and location format\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('vehicle_id');",
+              "    pm.expect(jsonData).to.have.property('latitude');",
+              "    pm.expect(jsonData).to.have.property('longitude');",
+              "    pm.expect(jsonData).to.have.property('timestamp');",
+              "});"
+            ],
+            "type": "javascript"
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:8080/vehicles/B1234XYZ/location",
-          "protocol": "http",
+          "raw": "{{base_url}}/vehicles/{{vehicle_id}}/location",
           "host": [
-            "localhost"
+            "{{base_url}}"
           ],
-          "port": "8080",
           "path": [
             "vehicles",
-            "B1234XYZ",
+            "{{vehicle_id}}",
             "location"
           ]
-        }
+        },
+        "description": "Mendapatkan lokasi koordinat terakhir (terbaru) dari sebuah kendaraan berdasarkan vehicle_id."
       },
       "response": []
     },
     {
       "name": "Get Location History",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response is an array\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "});"
+            ],
+            "type": "javascript"
+          }
+        }
+      ],
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "http://localhost:8080/vehicles/B1234XYZ/history?start=1700000000&end=9999999999",
-          "protocol": "http",
+          "raw": "{{base_url}}/vehicles/{{vehicle_id}}/history?start=1700000000&end=9999999999",
           "host": [
-            "localhost"
+            "{{base_url}}"
           ],
-          "port": "8080",
           "path": [
             "vehicles",
-            "B1234XYZ",
+            "{{vehicle_id}}",
             "history"
           ],
           "query": [
             {
               "key": "start",
-              "value": "1700000000"
+              "value": "1700000000",
+              "description": "Unix timestamp awal rentang waktu"
             },
             {
               "key": "end",
-              "value": "9999999999"
+              "value": "9999999999",
+              "description": "Unix timestamp akhir rentang waktu"
             }
           ]
-        }
+        },
+        "description": "Mendapatkan seluruh riwayat koordinat perjalanan kendaraan tertentu dalam rentang waktu unix timestamp start s/d end."
       },
       "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "vehicle_id",
+      "value": "B1234XYZ",
+      "type": "string"
     }
   ]
 }
