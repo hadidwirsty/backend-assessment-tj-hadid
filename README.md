@@ -24,7 +24,7 @@ Publisher → Mosquitto → Server (subscriber) → PostgreSQL
 ## How to Run
 
 ### 1. Clone repository
-git clone https://github.com/hadid/backend-assessment-tj-hadid.git
+git clone git clone https://github.com/hadidwirsty/backend-assessment-tj-hadid.git
 cd backend-assessment-tj-hadid
 
 ### 2. Start all services
