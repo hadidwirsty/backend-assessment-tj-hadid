@@ -30,12 +30,8 @@
         "header": [],
         "url": {
           "raw": "{{base_url}}/health",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "health"
-          ]
+          "host": ["{{base_url}}"],
+          "path": ["health"]
         },
         "description": "Mengecek apakah REST API server berjalan dengan normal."
       },
@@ -68,14 +64,8 @@
         "header": [],
         "url": {
           "raw": "{{base_url}}/vehicles/{{vehicle_id}}/location",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "vehicles",
-            "{{vehicle_id}}",
-            "location"
-          ]
+          "host": ["{{base_url}}"],
+          "path": ["vehicles", "{{vehicle_id}}", "location"]
         },
         "description": "Mendapatkan lokasi koordinat terakhir (terbaru) dari sebuah kendaraan berdasarkan vehicle_id."
       },
@@ -105,14 +95,8 @@
         "header": [],
         "url": {
           "raw": "{{base_url}}/vehicles/{{vehicle_id}}/history?start=1700000000&end=9999999999",
-          "host": [
-            "{{base_url}}"
-          ],
-          "path": [
-            "vehicles",
-            "{{vehicle_id}}",
-            "history"
-          ],
+          "host": ["{{base_url}}"],
+          "path": ["vehicles", "{{vehicle_id}}", "history"],
           "query": [
             {
               "key": "start",
