@@ -1,0 +1,130 @@
+version: "3.9"
+
+networks:
+  fleet-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+  mosquitto_data:
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: fleet-postgres
+    environment:
+      POSTGRES_USER: fleet_user
+      POSTGRES_PASSWORD: fleet_pass
+      POSTGRES_DB: fleet_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations/001_create_vehicle_locations.sql:/docker-entrypoint-initdb.d/001_create_vehicle_locations.sql
+    networks:
+      - fleet-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fleet_user -d fleet_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: fleet-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - fleet-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: fleet-mosquitto
+    volumes:
+      - ./docker/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+    ports:
+      - "1883:1883"
+    networks:
+      - fleet-network
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_sub -t '$$SYS/#' -C 1 -i healthcheck -W 3"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fleet-server
+    command: ["./server"]
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: fleet_user
+      DB_PASSWORD: fleet_pass
+      DB_NAME: fleet_db
+      MQTT_BROKER: tcp://mosquitto:1883
+      MQTT_CLIENT_ID: fleet-subscriber
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      GEOFENCE_LAT: "-6.2088"
+      GEOFENCE_LON: "106.8456"
+      GEOFENCE_RADIUS_METERS: "50"
+      API_PORT: "8080"
+    ports:
+      - "8080:8080"
+    networks:
+      - fleet-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      mosquitto:
+        condition: service_healthy
+    restart: on-failure
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fleet-worker
+    command: ["./worker"]
+    environment:
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+    networks:
+      - fleet-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    restart: on-failure
+
+  publisher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fleet-publisher
+    command: ["./publisher"]
+    environment:
+      MQTT_BROKER: tcp://mosquitto:1883
+      GEOFENCE_LAT: "-6.2088"
+      GEOFENCE_LON: "106.8456"
+      GEOFENCE_RADIUS_METERS: "50"
+    networks:
+      - fleet-network
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+    restart: on-failure

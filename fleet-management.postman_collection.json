@@ -1,0 +1,80 @@
+{
+  "info": {
+    "name": "Fleet Management System",
+    "_postman_id": "fleet-mgmt-tj-2024",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/health",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "health"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Last Location",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/vehicles/B1234XYZ/location",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "vehicles",
+            "B1234XYZ",
+            "location"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Location History",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/vehicles/B1234XYZ/history?start=1700000000&end=9999999999",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "vehicles",
+            "B1234XYZ",
+            "history"
+          ],
+          "query": [
+            {
+              "key": "start",
+              "value": "1700000000"
+            },
+            {
+              "key": "end",
+              "value": "9999999999"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
