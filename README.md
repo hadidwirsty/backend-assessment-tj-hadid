@@ -13,6 +13,10 @@ Flow data:
 Publisher → Mosquitto → Server (subscriber) → PostgreSQL
                                               → RabbitMQ → Worker
 
+## Notes
+- The PDF specification contains a typo in the table name (`vehicle_loctions`). 
+  This implementation uses the correct spelling `vehicle_locations` for maintainability.
+
 ## Prerequisites
 - Docker
 - Docker Compose v2+

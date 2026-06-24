@@ -6,12 +6,12 @@ import (
 )
 
 type VehicleLocation struct {
-	ID        int64
-	VehicleID string
-	Latitude  float64
-	Longitude float64
-	Timestamp int64
-	CreatedAt time.Time
+	ID        int64     `json:"-"`
+	VehicleID string    `json:"vehicle_id"`
+	Latitude  float64   `json:"latitude"`
+	Longitude float64   `json:"longitude"`
+	Timestamp int64     `json:"timestamp"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type LocationPayload struct {
