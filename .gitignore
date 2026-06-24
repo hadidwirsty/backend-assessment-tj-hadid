@@ -1,0 +1,24 @@
+# Local env file containing credentials
+.env
+
+# Go binaries and build artifacts
+bin/
+cmd/server/server
+cmd/worker/worker
+cmd/publisher/publisher
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# IDEs & System files
+.DS_Store
+.idea/
+.vscode/
+
+# Dev directories excluded per requirements
+.gemini/
+docs/
