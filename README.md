@@ -13,6 +13,9 @@ Flow data:
 Publisher → Mosquitto → Server (subscriber) → PostgreSQL
                                               → RabbitMQ → Worker
 
+## Demo Video
+[▶ Watch on YouTube](https://youtu.be/TW_JuyE_258)
+
 ## Notes
 - The PDF specification contains a typo in the table name (`vehicle_loctions`). 
   This implementation uses the correct spelling `vehicle_locations` for maintainability.
